@@ -5,16 +5,16 @@
               <img src="./logo_index.png" alt="黑马头条">
           </div>
           <div class="login-form">
-              <el-form ref="form" :model="form">
+              <el-form ref="form" :model="LoginForm">
                 <el-form-item>
-                <el-input v-model="form.mobile" placeholder='请输入手机号'></el-input>
+                <el-input v-model="LoginForm.mobile" placeholder='请输入手机号'></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-col :span='10'>
-                        <el-input v-model="form.code" placeholder='验证码'></el-input>
+                        <el-input v-model="LoginForm.code" placeholder='验证码'></el-input>
                     </el-col>
                     <el-col :span="10" :offset="2">
-                        <el-button>获取验证码</el-button>
+                        <el-button @click="handleSendCode">获取验证码</el-button>
                     </el-col>
                 </el-form-item>
                 <el-button class="btn-login" type="primary" @click="onSubmit">登录</el-button>
@@ -24,12 +24,13 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   name: 'AppLogin',
   data() {
     return {
-      form: {
-        mobile: '',
+      LoginForm: {
+        mobile: '14797356373',
         code: ''
       }
     }
@@ -37,6 +38,15 @@ export default {
   methods: {
     onSubmit() {
       console.log('submit!')
+    },
+    handleSendCode() {
+      const { mobile } = this.LoginForm
+      axios({
+        method: 'GET',
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+      }).then(res => {
+        console.log(res.data)
+      })
     }
   }
 }
