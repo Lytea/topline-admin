@@ -25,6 +25,7 @@
 </template>
 <script>
 import axios from 'axios'
+import '@/vendor/gt.js'
 export default {
   name: 'AppLogin',
   data() {
@@ -32,7 +33,9 @@ export default {
       LoginForm: {
         mobile: '14797356373',
         code: ''
-      }
+      },
+      //   通过initGeetest得到的极验验证码对象
+      captchaObj: null
     }
   },
   methods: {
@@ -41,11 +44,33 @@ export default {
     },
     handleSendCode() {
       const { mobile } = this.LoginForm
+      if (this.captchaObj) {
+        return this.captchaObj.verify()
+      }
       axios({
         method: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
       }).then(res => {
-        console.log(res.data)
+        const data = res.data.data
+        // console.log(res.data)
+        window.initGeetest({
+          // 以下配置参数来自服务端 SDK
+          gt: data.gt,
+          challenge: data.challenge,
+          offline: !data.success,
+          new_captcha: data.new_captcha,
+          //   隐藏按钮式
+          product: 'bind'
+        }, (captchaObj) => {
+          this.captchaObj = captchaObj
+          //   这里可以调用验证实例 captchaObj 的实例方法
+          captchaObj.onReady(function() {
+            // 显示验证码
+            captchaObj.verify()
+          }).onSuccess(function() {
+            console.log('验证成功啦')
+          })
+        })
       })
     }
   }
