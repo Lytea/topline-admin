@@ -17,7 +17,7 @@
                         <el-button @click="handleSendCode">获取验证码</el-button>
                     </el-col>
                 </el-form-item>
-                <el-button class="btn-login" type="primary" @click="onSubmit">登录</el-button>
+                <el-button class="btn-login" type="primary" @click="handleLogin">登录</el-button>
               </el-form>
            </div>
       </div>
@@ -39,9 +39,6 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
-      console.log('submit!')
-    },
     handleSendCode() {
       const { mobile } = this.LoginForm
       if (this.captchaObj) {
@@ -75,18 +72,39 @@ export default {
               geetest_seccode: seccode } =
             captchaObj.getValidate()
             axios({
-                method: 'GET',
-                url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
-                params: {
-                  challenge,
-                  validate,
-                  seccode
-                }
+              method: 'GET',
+              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+              params: {
+                challenge,
+                validate,
+                seccode
+              }
             }).then(res => {
-                console.log(res)
+              console.log(res)
             })
           })
         })
+      })
+    },
+    handleLogin() {
+      axios({
+        method: 'POST',
+        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+        data: this.LoginForm
+      }).then(res => {
+        this.$message({
+          message: '恭喜你，登录成功',
+          type: 'success'
+        })
+        console.log(res.data)
+        this.$router.push({
+          name: 'home'
+        })
+      }).catch(err => {
+        if(err.response.status===400){
+          this.$message.error('登录失败');
+        }
+        
       })
     }
   }
