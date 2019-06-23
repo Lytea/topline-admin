@@ -17,7 +17,7 @@
                         <!-- <el-button @click="handleSendCode">{{content}}</el-button> -->
                         <el-button
                           @click="handleSendCode"
-                          :disabled="!!codeTimer"
+                          :disabled="!!codeTimer || codeLoading"
                         >
                           {{codeTimer ? `${codeSeconds}后重新发送` : '发送验证码'}}
                         </el-button>
@@ -46,6 +46,7 @@ export default {
   name: 'AppLogin',
   data() {
     return {
+      codeLoading: false,
       sendMobile: '', // 保存初始化验证码之后发送短信的手机号
       codeSeconds: initCodeSeconds, // 倒计时的时间
       codeTimer: null, // 倒计时定时器
@@ -104,6 +105,7 @@ export default {
       })
     },
     showGeetest() {
+      this.codeLoading = true
       axios({
         method: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${this.LoginForm.mobile}`
@@ -122,6 +124,7 @@ export default {
           this.captchaObj = captchaObj
           //   这里可以调用验证实例 captchaObj 的实例方法
           captchaObj.onReady(() => {
+            this.codeLoading = false
             this.sendMobile = this.LoginForm.mobile
             // 显示验证码
             captchaObj.verify()
