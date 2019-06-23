@@ -14,8 +14,18 @@
                         <el-input v-model="LoginForm.code" placeholder='验证码'></el-input>
                     </el-col>
                     <el-col :span="10" :offset="2">
-                        <el-button @click="handleSendCode">{{content}}</el-button>
+                        <!-- <el-button @click="handleSendCode">{{content}}</el-button> -->
+                        <el-button
+                          @click="handleSendCode"
+                          :disabled="!!codeTimer"
+                        >
+                          {{codeTimer ? `${codeSeconds}后重新发送` : '发送验证码'}}
+                        </el-button>
                     </el-col>
+                </el-form-item>
+                <el-form-item prop="agree">
+                   <el-checkbox v-model="LoginForm.agree"></el-checkbox>
+                   <span>我已同意<a href="#">用户协议</a>和<a href="#">隐私协议</a></span>
                 </el-form-item>
                 <el-button
                   class="btn-login"
@@ -31,16 +41,18 @@
 <script>
 import axios from 'axios'
 import '@/vendor/gt.js'
+const initCodeSeconds = 60
 export default {
   name: 'AppLogin',
   data() {
     return {
-      content: '发送验证码',
-      totalTime: 60,
+      codeSeconds: initCodeSeconds, // 倒计时的时间
+      codeTimer: null, // 倒计时定时器
       // 表单数据
       LoginForm: {
         mobile: '14797356373',
-        code: ''
+        code: '',
+        agree: ''
       },
       // 登录按钮的loading状态
       loginLoading: false,
@@ -53,6 +65,10 @@ export default {
         code: [
           { required: true, message: '请输入验证码', trigger: 'blur' },
           { len: 6, message: '长度必须为6个字符', trigger: 'blur' }
+        ],
+        agree: [
+          { required: true, message: '请同意用户协议', trigger: 'change' },
+          { pattern: /true/, message: '请同意用户协议', trigger: 'change' }
         ]
       },
       //   通过initGeetest得到的极验验证码对象
@@ -61,6 +77,15 @@ export default {
   },
   methods: {
     handleSendCode() {
+      this.$refs['ruleForm'].validateField('mobile', errorMessage => {
+        // console.log(errorMessage)发送验证码成功提示消息为空发送失败提示消息为那个错误信息
+        if (errorMessage.trim().length > 0) {
+          return
+        }
+        this.showGeetest()
+      })
+    },
+    showGeetest() {
       const { mobile } = this.LoginForm
       if (this.captchaObj) {
         return this.captchaObj.verify()
@@ -82,11 +107,11 @@ export default {
         }, (captchaObj) => {
           this.captchaObj = captchaObj
           //   这里可以调用验证实例 captchaObj 的实例方法
-          captchaObj.onReady(function() {
+          captchaObj.onReady(()=> {
             // 显示验证码
             captchaObj.verify()
-          }).onSuccess(function() {
-            console.log(captchaObj.getValidate())
+          }).onSuccess(()=> {
+            // console.log(captchaObj.getValidate())
             const {
               geetest_challenge: challenge,
               geetest_validate: validate,
@@ -101,23 +126,12 @@ export default {
                 seccode
               }
             }).then(res => {
-              console.log(res)
+              // 发送短信之后开始倒计时
+              this.codeCodeDown()
             })
           })
         })
       })
-      // 这里解决60秒不见了的问题
-      this.content = this.totalTime + 's后重新发送'
-      let clock = window.setInterval(() => {
-        this.totalTime--
-        this.content = this.totalTime + 's后重新发送'
-        // 当倒计时小于0时清除定时器
-        if (this.totalTime < 0) {
-          window.clearInterval(clock)
-          this.content = '重新发送验证码'
-          this.totalTime = 60
-        }
-      }, 1000)
     },
     handleLogin() {
       // 表单组件有一个方法validate可以用于获取当前表单的验证状态
@@ -151,6 +165,19 @@ export default {
         }
         this.loginLoading = false
       })
+    },
+    /*
+    倒计时
+    */
+    codeCodeDown() {
+      this.codeTimer = window.setInterval(() => {
+        this.codeSeconds--
+        if (this.codeSeconds <= 0) {
+          this.codeSeconds = this.initCodeSeconds // 让定时器回到最初状态
+          window.clearInterval(this.codeTimer) // 清除定时器
+          this.codeTimer = null // 清除定时器的标志
+        }
+      }, 1000)
     }
   }
 }
