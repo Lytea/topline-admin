@@ -5,11 +5,11 @@
               <img src="./logo_index.png" alt="黑马头条">
           </div>
           <div class="login-form">
-              <el-form ref="form" :model="LoginForm">
-                <el-form-item>
+              <el-form :rules="rules" ref="ruleForm" :model="LoginForm">
+                <el-form-item prop="mobile">
                 <el-input v-model="LoginForm.mobile" placeholder='请输入手机号'></el-input>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item prop="code">
                     <el-col :span='10'>
                         <el-input v-model="LoginForm.code" placeholder='验证码'></el-input>
                     </el-col>
@@ -33,6 +33,16 @@ export default {
       LoginForm: {
         mobile: '14797356373',
         code: ''
+      },
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { len: 11, message: '长度必须为11个字符', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { len: 6, message: '长度必须为6个字符', trigger: 'blur' }
+        ]
       },
       //   通过initGeetest得到的极验验证码对象
       captchaObj: null
@@ -87,6 +97,16 @@ export default {
       })
     },
     handleLogin() {
+      // 表单组件有一个方法validate可以用于获取当前表单的验证状态
+      this.$refs['ruleForm'].validate((valid) => {
+        if (!valid) {
+          return
+        }
+        // 表单验证通过提交登录
+        this.submitLogin()
+      })
+    },
+    submitLogin() {
       axios({
         method: 'POST',
         url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
@@ -101,10 +121,9 @@ export default {
           name: 'home'
         })
       }).catch(err => {
-        if(err.response.status===400){
-          this.$message.error('登录失败');
+        if (err.response.status === 400) {
+          this.$message.error('登录失败')
         }
-        
       })
     }
   }
