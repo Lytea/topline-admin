@@ -46,6 +46,7 @@ export default {
   name: 'AppLogin',
   data() {
     return {
+      sendMobile: '', // 保存初始化验证码之后发送短信的手机号
       codeSeconds: initCodeSeconds, // 倒计时的时间
       codeTimer: null, // 倒计时定时器
       // 表单数据
@@ -77,22 +78,35 @@ export default {
   },
   methods: {
     handleSendCode() {
+      // 检测手机号是否有效
       this.$refs['ruleForm'].validateField('mobile', errorMessage => {
         // console.log(errorMessage)发送验证码成功提示消息为空发送失败提示消息为那个错误信息
         if (errorMessage.trim().length > 0) {
           return
         }
-        this.showGeetest()
+        // 验证码有效后，初识验证码插件
+        // this.showGeetest()
+        // 如果用户输入的手机号和之前初始化的验证码手机号不一致，就基于当前手机号码重新初始化
+        // 否则，直接verify显示
+        if (this.captchaObj) {
+          if (this.LoginForm.mobile !== this.sendMobile) {
+            // 初始化之前，需要把之前的dom元素删除
+            document.body.removeChild(document.querySelector('.geetest_panel'))
+            // 手机号发生改变 重新初始化
+            this.showGeetest()
+          } else {
+            this.captchaObj.verify()
+          }
+        } else {
+          // 这里是第一次初始化验证码插件
+          this.showGeetest()
+        }
       })
     },
     showGeetest() {
-      const { mobile } = this.LoginForm
-      if (this.captchaObj) {
-        return this.captchaObj.verify()
-      }
       axios({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${this.LoginForm.mobile}`
       }).then(res => {
         const data = res.data.data
         // console.log(res.data)
@@ -107,10 +121,11 @@ export default {
         }, (captchaObj) => {
           this.captchaObj = captchaObj
           //   这里可以调用验证实例 captchaObj 的实例方法
-          captchaObj.onReady(()=> {
+          captchaObj.onReady(() => {
+            this.sendMobile = this.LoginForm.mobile
             // 显示验证码
             captchaObj.verify()
-          }).onSuccess(()=> {
+          }).onSuccess(() => {
             // console.log(captchaObj.getValidate())
             const {
               geetest_challenge: challenge,
@@ -119,7 +134,7 @@ export default {
             captchaObj.getValidate()
             axios({
               method: 'GET',
-              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${this.LoginForm.mobile}`,
               params: {
                 challenge,
                 validate,
