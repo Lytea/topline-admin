@@ -17,7 +17,12 @@
                         <el-button @click="handleSendCode">获取验证码</el-button>
                     </el-col>
                 </el-form-item>
-                <el-button class="btn-login" type="primary" @click="handleLogin">登录</el-button>
+                <el-button
+                  class="btn-login"
+                  type="primary"
+                  @click="handleLogin"
+                  :loading="loginLoading"
+                >登录</el-button>
               </el-form>
            </div>
       </div>
@@ -30,10 +35,14 @@ export default {
   name: 'AppLogin',
   data() {
     return {
+      // 表单数据
       LoginForm: {
         mobile: '14797356373',
         code: ''
       },
+      // 登录按钮的loading状态
+      loginLoading: false,
+      // 表单验证规则
       rules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -107,6 +116,7 @@ export default {
       })
     },
     submitLogin() {
+      this.loginLoading = true
       axios({
         method: 'POST',
         url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
@@ -116,7 +126,8 @@ export default {
           message: '恭喜你，登录成功',
           type: 'success'
         })
-        console.log(res.data)
+        this.loginLoading = false
+        // console.log(res.data)
         this.$router.push({
           name: 'home'
         })
@@ -124,6 +135,7 @@ export default {
         if (err.response.status === 400) {
           this.$message.error('登录失败')
         }
+        this.loginLoading = false
       })
     }
   }
@@ -135,6 +147,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    background: #cccccc;
     .login-form-wrap{
         padding: 70px;
         background: #fff;
