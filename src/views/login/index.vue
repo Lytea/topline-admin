@@ -14,7 +14,7 @@
                         <el-input v-model="LoginForm.code" placeholder='验证码'></el-input>
                     </el-col>
                     <el-col :span="10" :offset="2">
-                        <el-button @click="handleSendCode">获取验证码</el-button>
+                        <el-button @click="handleSendCode">{{content}}</el-button>
                     </el-col>
                 </el-form-item>
                 <el-button
@@ -35,6 +35,8 @@ export default {
   name: 'AppLogin',
   data() {
     return {
+      content: '发送验证码',
+      totalTime: 60,
       // 表单数据
       LoginForm: {
         mobile: '14797356373',
@@ -104,6 +106,18 @@ export default {
           })
         })
       })
+      // 这里解决60秒不见了的问题
+      this.content = this.totalTime + 's后重新发送'
+      let clock = window.setInterval(() => {
+        this.totalTime--
+        this.content = this.totalTime + 's后重新发送'
+        // 当倒计时小于0时清除定时器
+        if (this.totalTime < 0) {
+          window.clearInterval(clock)
+          this.content = '重新发送验证码'
+          this.totalTime = 60
+        }
+      }, 1000)
     },
     handleLogin() {
       // 表单组件有一个方法validate可以用于获取当前表单的验证状态
