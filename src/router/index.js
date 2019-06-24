@@ -5,18 +5,18 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      /*
-      路由的名字，和组件名没关系，就是path的别名
-      好处就是，加入你的path是/x/x/x，我们跳转的时候就可以
-      $router.push('/x/x/x)
-      $router.push({ name:'xxx' })
-      @表示src的目录 绝对路径的别名
-      */
-      name: 'home',
-      path: '/',
-      component: () => import('@/views/home')
-    },
+    // {
+    //   /*
+    //   路由的名字，和组件名没关系，就是path的别名
+    //   好处就是，加入你的path是/x/x/x，我们跳转的时候就可以
+    //   $router.push('/x/x/x)
+    //   $router.push({ name:'xxx' })
+    //   @表示src的目录 绝对路径的别名
+    //   */
+    //   name: 'home',
+    //   path: '/',
+    //   component: () => import('@/views/home')
+    // },
     {
       name: 'login',
       path: '/login',
@@ -24,9 +24,20 @@ export default new Router({
     },
     {
       name: 'layout',
-      path: '/layout',
-      component: () => import('@/views/layout')
+      path: '/',
+      component: () => import('@/views/layout'),
+      children: [
+        {
+          name: 'home',
+          path: '',
+          component: () => import('@/views/home')
+        },
+        {
+          name: 'publish',
+          path: '/publish',
+          component: () => import('@/views/publish')
+        }
+      ]
     }
-
   ]
 })
