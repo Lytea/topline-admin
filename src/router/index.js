@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import nprogress from 'nprogress'
 Vue.use(Router)
 
 const router = new Router({
@@ -47,27 +47,34 @@ to去哪儿
 from来自哪里
 next允许通行
 */
-router.beforeEach((to,from,next) => {
+router.beforeEach((to, from, next) => {
+  nprogress.start()
   const userInfo = window.localStorage.getItem('user_info')
   // 如果是非/login页面，判断其登录状态
   // console.log(to)
   if (to.name !== 'login') {
     if (!userInfo) {
       // 如果没有登录，让其跳转到登录页面
-      next({name: 'login'})
-    }else {
+      next({ name: 'login' })
+    } else {
       // 如果登录了，就可以通过
       next()
     }
-  }else {
+  } else {
     // 如果登录了就访问登录页
     // 如果没有登录才允许访问
     if (userInfo) {
-      next(false)           
-    }else {
+      next(false)
+    } else {
       next()
     }
   }
+})
+/*
+路由导航完成的时候回进入到这里
+*/
+router.afterEach((to, from) => {
+  nprogress.done()
 })
 
 export default router

@@ -7,7 +7,7 @@
 export default {
   name: 'AppPublish',
   data() {
-      return {}
+    return {}
   }
 }
 </script>
