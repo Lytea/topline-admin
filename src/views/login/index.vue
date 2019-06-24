@@ -168,6 +168,8 @@ export default {
         url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
         data: this.LoginForm
       }).then(res => {
+        // 登录成功，将接口返回的用户信息数据放到本地存储
+        window.localStorage.setItem('user_info', JSON.stringify(res.data.data))
         this.$message({
           message: '恭喜你，登录成功',
           type: 'success'

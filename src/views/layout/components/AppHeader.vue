@@ -3,9 +3,9 @@
     <el-col :span="14">江苏传智播客教育科技股份有限公司</el-col>
     <el-col :span="4" :offset="6">
       <el-dropdown>
-        <span><img width="30" src="http://toutiao.meiduo.site/Fkj6tQi3xJwVXi1u2swCElotfdCi" alt=""></span>
+        <span><img width="30" :src="userInfo.photo"></span>
         <span class="el-dropdown-link">
-          14797356373<i class="el-icon-arrow-down el-icon--right"></i>
+          {{userInfo.name}}<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人信息</el-dropdown-item>
@@ -20,7 +20,12 @@
 export default {
   name: 'AppHeader',
   data() {
-    return {}
+    return {
+      userInfo: {}
+    }
+  },
+  created() {
+    this.userInfo = JSON.parse(window.localStorage.getItem('user_info'))
   }
 }
 </script>

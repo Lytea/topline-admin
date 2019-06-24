@@ -7,7 +7,7 @@
     background-color="#545c64"
     text-color="#fff"
     active-text-color="#ffd04b">
-    <el-menu-item index="2">
+    <el-menu-item index="/">
       <i class="iconfont iconhome"></i>
       <span slot="title">首页</span>
     </el-menu-item>
