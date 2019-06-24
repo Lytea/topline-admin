@@ -35,6 +35,9 @@ export default {
   background-color: #ccc;
 }
 .el-header{
+  background-color: #ffffff;
+}
+.el-main{
   background-color: pink;
 }
 </style>
