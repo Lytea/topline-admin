@@ -22,7 +22,7 @@ export default {
     AppHeader
   },
   data() {
-      return {}
+    return {}
   }
 }
 </script>
