@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import '@/vendor/gt.js'
 const initCodeSeconds = 60
 export default {
@@ -106,7 +106,7 @@ export default {
     },
     showGeetest() {
       this.codeLoading = true
-      axios({
+      this.$http({
         method: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${this.LoginForm.mobile}`
       }).then(res => {
@@ -135,7 +135,7 @@ export default {
               geetest_validate: validate,
               geetest_seccode: seccode } =
             captchaObj.getValidate()
-            axios({
+            this.$http({
               method: 'GET',
               url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${this.LoginForm.mobile}`,
               params: {
@@ -163,7 +163,7 @@ export default {
     },
     submitLogin() {
       this.loginLoading = true
-      axios({
+      this.$http({
         method: 'POST',
         url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
         data: this.LoginForm
