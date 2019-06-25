@@ -108,9 +108,9 @@ export default {
       this.codeLoading = true
       this.$http({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${this.LoginForm.mobile}`
-      }).then(res => {
-        const data = res.data.data
+        url: `/captchas/${this.LoginForm.mobile}`
+      }).then(data => {
+        // const data = res.data.data
         // console.log(res.data)
         window.initGeetest({
           // 以下配置参数来自服务端 SDK
@@ -137,13 +137,13 @@ export default {
             captchaObj.getValidate()
             this.$http({
               method: 'GET',
-              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${this.LoginForm.mobile}`,
+              url: `/sms/codes/${this.LoginForm.mobile}`,
               params: {
                 challenge,
                 validate,
                 seccode
               }
-            }).then(res => {
+            }).then(data => {
               // 发送短信之后开始倒计时
               this.codeCodeDown()
             })
@@ -165,11 +165,11 @@ export default {
       this.loginLoading = true
       this.$http({
         method: 'POST',
-        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+        url: '/authorizations',
         data: this.LoginForm
-      }).then(res => {
+      }).then(data => {
         // 登录成功，将接口返回的用户信息数据放到本地存储
-        window.localStorage.setItem('user_info', JSON.stringify(res.data.data))
+        window.localStorage.setItem('user_info', JSON.stringify(data))
         this.$message({
           message: '恭喜你，登录成功',
           type: 'success'

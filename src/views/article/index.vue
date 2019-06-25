@@ -70,6 +70,7 @@
  </template>
 
 <script>
+// const userInfo = JSON.parse(window.localStorage.getItem('user_info'))
 export default {
   name: 'ArticleList',
   data() {
@@ -103,6 +104,17 @@ export default {
         address: '上海市普陀区金沙江路 1516 弄'
       }]
     }
+  },
+  created() {
+    this.$http({
+      method: 'GET',
+      url: '/articles',
+      // headers: {
+      //   // Authorization: `Bearer ${userInfo.token}`
+      // }
+    }).then(data => {
+      console.log(data)
+    })
   },
   methods: {
     onSubmit() {
