@@ -29,7 +29,7 @@ const router = new Router({
       children: [
         {
           name: 'home',
-          path: '',
+          path: '/',
           component: () => import('@/views/home')
         },
         {
@@ -39,7 +39,7 @@ const router = new Router({
         },
         {
           name: 'article-list',
-          path: '/article',
+          path: '/articles',
           component: () => import('@/views/article')
         }
       ]

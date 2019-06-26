@@ -208,7 +208,8 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #cccccc;
+    background-image: url(./login_bg.jpg);
+    background-size: cover;
     .login-form-wrap{
         padding: 70px;
         background: #fff;

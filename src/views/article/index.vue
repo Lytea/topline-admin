@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 筛选区域S -->
     <el-card class="filter-card">
       <div slot="header" class="clearfix">
         <span>筛选条件</span>
@@ -37,34 +38,62 @@
         </el-form-item>
         </el-form>
     </el-card>
+    <!-- 筛选区域E -->
     <el-card class="list-card">
       <div slot="header" class="clearfix">
         <span>共找到0条符合条件的内容</span>
         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
       </div>
+      <!-- table表格S -->
       <el-table
-        :data="tableData"
-        style="width: 100%">
+        :data="articles"
+        style="width: 100%"
+        v-loading="articleLoading"
+        >
         <el-table-column
-          prop="date"
-          label="日期"
+          prop="cover.images[0]"
+          label="封面"
+          width="180">
+          <!-- 表格列默认只能输出文本，如果需要自定义里面的内容，则需要用template -->
+          <!-- slot-scope是插槽作用域 -->
+          <template slot-scope="scope">
+            <img width="50" :src="scope.row.cover.images[0]" alt="">
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="title"
+          label="标题"
           width="180">
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="姓名"
-          width="180">
+          prop="pubdate"
+          label="日期">
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="地址">
+          prop="status"
+          label="状态">
+        </el-table-column>
+        <el-table-column
+          label="操作">
+          <template slot-scope="scope">
+            <el-button type="success" plain>修改</el-button>
+            <el-button type="danger" plain @click="handleDelete(scope.row)">删除</el-button>
+          </template>
         </el-table-column>
         </el-table>
+        <!-- table表格E -->
+      <!-- 数据分页S -->
+      <!-- 1.分多少页，每页多少条数据 -->
+      <!-- 2.页面改变加载对应页码数据 -->
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="1000">
+        :total="totalCount"
+        :disabled="articleLoading"
+        @current-change="handleCurrentChange"
+        >
       </el-pagination>
+      <!-- 数据分页E -->
     </el-card>
   </div>
  </template>
@@ -75,6 +104,7 @@ export default {
   name: 'ArticleList',
   data() {
     return {
+      articles: [],
       form: {
         name: '',
         region: '',
@@ -86,39 +116,43 @@ export default {
         desc: '',
         value1: ''
       },
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      totalCount: 0,
+      articleLoading: false
     }
   },
   created() {
-    this.$http({
-      method: 'GET',
-      url: '/articles',
-      // headers: {
-      //   // Authorization: `Bearer ${userInfo.token}`
-      // }
-    }).then(data => {
-      console.log(data)
-    })
+    this.loadArticles()
   },
   methods: {
+    loadArticles(page = 1) { // 设置参数默认值为第一页
+      this.articleLoading = true
+      this.$http({
+        method: 'GET',
+        url: '/articles',
+        params: {
+          page,
+          per_page: 10 // 获取10条数据
+        }
+      }).then(data => {
+        this.articles = data.results // 列表数据
+        this.totalCount = data.total_count // 总记录数
+        this.articleLoading = false
+      })
+    },
     onSubmit() {
       console.log('submit!')
+    },
+    handleCurrentChange(page) {
+      // 当页码发生改变的时候，显示页码对应的数据
+      // console.log(page)
+      this.loadArticles(page)
+    },
+    handleDelete(article) {
+      // console.log(article)
+      this.$http({
+        method: 'DELETE',
+        url: `/articles/${article.id}`
+      })
     }
   }
 }
