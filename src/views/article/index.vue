@@ -140,7 +140,7 @@ export default {
       })
     },
     onSubmit() {
-      console.log('submit!')
+      // console.log('submit!')
     },
     handleCurrentChange(page) {
       // 当页码发生改变的时候，显示页码对应的数据
@@ -149,9 +149,28 @@ export default {
     },
     handleDelete(article) {
       // console.log(article)
-      this.$http({
-        method: 'DELETE',
-        url: `/articles/${article.id}`
+      this.$confirm('确认删除吗?', '删除成功', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          method: 'DELETE',
+          url: `/articles/${article.id}`
+        }).then(data => {
+        // console.log(data)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          // 重新加载数据
+          this.loadArticles(this.page)
+        })
+      }).catch(() => { // 取消执行
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     }
   }
