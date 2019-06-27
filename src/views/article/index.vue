@@ -13,7 +13,7 @@
           <el-radio
             v-for="(item, index) in statTypes"
             :key="item.type"
-            :label="index">{{ item.label }}</el-radio>
+            :label="index+''">{{ item.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表">
@@ -28,6 +28,9 @@
         </el-form-item>
         <el-form-item label="时间选择">
           <el-col :span="11">
+            <!-- value-form是为日期转换成正确的字符串格式 -->
+            <!-- v-model是必须绑定的指令 -->
+            <!-- 若想在视图中看到选择的日期，需要出发change事件 -->
           <el-date-picker
             value-format="yyyy-MM-dd"
             v-model="begin_end_pubdate"
@@ -40,14 +43,18 @@
           </el-col>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
+          <el-button
+            type="primary"
+            @click="onSubmit"
+            :disabled="articleLoading"
+          >查询</el-button>
         </el-form-item>
         </el-form>
     </el-card>
     <!-- 筛选区域E -->
     <el-card class="list-card">
       <div slot="header" class="clearfix">
-        <span>共找到0条符合条件的内容</span>
+        <span>共找到<strong>{{totalCount}}</strong>条符合条件的内容</span>
         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
       </div>
       <!-- table表格S -->
@@ -167,12 +174,20 @@ export default {
   methods: {
     loadArticles(page = 1) { // 设置参数默认值为第一页
       this.articleLoading = true
+      const filterData = {}
+      for(let key in this.filterParams) {
+        if(this.filterParams[key]) {
+          filterData[key] = this.filterParams[key]
+        }
+      }
+      // console.log(filterData)
       this.$http({
         method: 'GET',
         url: '/articles',
         params: {
           page, // 请求数据的页码，不传为参数的默认值
           per_page: 10, // 请求数据的每页大小 获取10条数据
+          ...filterData // 将有效地数据混入到params对象中
         }
       }).then(data => {
         this.articles = data.results // 列表数据
@@ -193,6 +208,7 @@ export default {
     },
     onSubmit() {
       // console.log('submit!')
+      this.loadArticles()
     },
     handleCurrentChange(page) {
       // 当页码发生改变的时候，显示页码对应的数据
@@ -226,7 +242,7 @@ export default {
       })
     },
     handleDateChange(value) {
-      // console.log(value)
+      // console.log(value) value是一个数组，所以把这个数组的值分别传给begin——pubdate和end_pubdate
       this.filterParams.begin_pubdate = value[0]
       this.filterParams.end_pubdate = value[1]
     }
