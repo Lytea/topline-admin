@@ -8,15 +8,16 @@
       </div>
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="文章状态">
-          <el-radio-group v-model="form.resource">
+          <el-radio-group v-model="filterParams.status">
+            <el-radio label="">全部</el-radio>
           <el-radio
-            v-for="item in statTypes"
+            v-for="(item, index) in statTypes"
             :key="item.type"
-            :label="item.label"></el-radio>
+            :label="index">{{ item.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
+          <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
           <el-option
             v-for="item in channels"
             :key="item.id"
@@ -28,7 +29,9 @@
         <el-form-item label="时间选择">
           <el-col :span="11">
           <el-date-picker
-            v-model="form.value1"
+            value-format="yyyy-MM-dd"
+            v-model="begin_end_pubdate"
+            @change="handleDateChange"
             type="datetimerange"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -145,6 +148,13 @@ export default {
         desc: '',
         value1: ''
       },
+      filterParams: {
+        status: '', // 文章状态
+        channel_id: '', // 频道id
+        begin_pubdate: '', // 开始时间
+        end_pubdate: '' // 结束时间
+      },
+      begin_end_pubdate: [],
       channels: [], // 频道列表
       totalCount: 0,
       articleLoading: false
@@ -161,8 +171,8 @@ export default {
         method: 'GET',
         url: '/articles',
         params: {
-          page,
-          per_page: 10 // 获取10条数据
+          page, // 请求数据的页码，不传为参数的默认值
+          per_page: 10, // 请求数据的每页大小 获取10条数据
         }
       }).then(data => {
         this.articles = data.results // 列表数据
@@ -170,6 +180,7 @@ export default {
         this.articleLoading = false
       })
     },
+    // 加载频道列表
     loadChannels() {
       this.$http({
         method: 'GET',
@@ -213,6 +224,11 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    handleDateChange(value) {
+      // console.log(value)
+      this.filterParams.begin_pubdate = value[0]
+      this.filterParams.end_pubdate = value[1]
     }
   }
 }
