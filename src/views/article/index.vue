@@ -6,7 +6,7 @@
         <span>筛选条件</span>
         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
       </div>
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form ref="form" :model="filterParams" label-width="80px">
         <el-form-item label="文章状态">
           <el-radio-group v-model="filterParams.status">
             <el-radio label="">全部</el-radio>
@@ -18,6 +18,7 @@
         </el-form-item>
         <el-form-item label="频道列表">
           <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
+          <el-option label="全部" value=""></el-option>
           <el-option
             v-for="item in channels"
             :key="item.id"
@@ -47,6 +48,7 @@
             type="primary"
             @click="onSubmit"
             :disabled="articleLoading"
+            :current-page="page"
           >查询</el-button>
         </el-form-item>
         </el-form>
@@ -102,6 +104,8 @@
       <!-- 数据分页S -->
       <!-- 1.分多少页，每页多少条数据 -->
       <!-- 2.页面改变加载对应页码数据 -->
+      <!-- total表示总记录数 -->
+      <!-- current-page表示当前页码，也就是要高亮的那个 -->
       <el-pagination
         background
         layout="prev, pager, next"
@@ -164,7 +168,8 @@ export default {
       begin_end_pubdate: [],
       channels: [], // 频道列表
       totalCount: 0,
-      articleLoading: false
+      articleLoading: false,
+      page: 1 // 当前页码
     }
   },
   created() {
@@ -175,8 +180,8 @@ export default {
     loadArticles(page = 1) { // 设置参数默认值为第一页
       this.articleLoading = true
       const filterData = {}
-      for(let key in this.filterParams) {
-        if(this.filterParams[key]) {
+      for (let key in this.filterParams) {
+        if (this.filterParams[key]) {
           filterData[key] = this.filterParams[key]
         }
       }
@@ -208,6 +213,7 @@ export default {
     },
     onSubmit() {
       // console.log('submit!')
+      this.page = 1 // 让查询后的页码显示第一页高亮
       this.loadArticles()
     },
     handleCurrentChange(page) {
