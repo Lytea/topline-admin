@@ -10,8 +10,8 @@ import axios from 'axios'
 import JSONbig from 'json-bigint'
 
 // 配置axios的基础路由
-// axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
-axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
+axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+// axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
 // 使用JSONbig处理数据中超出范围javascript安全整数范围的数字
 // JSONbig自己会分析数据中哪个数字超出使用范围了
 // 由于后端的数据id超出了javascript的安全整数范围，会导致整数无法精确表示

@@ -53,7 +53,7 @@ export default {
       // 表单数据
       LoginForm: {
         mobile: '14797356373',
-        code: '',
+        code: '246810',
         agree: ''
       },
       // 登录按钮的loading状态

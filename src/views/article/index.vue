@@ -9,17 +9,20 @@
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="文章状态">
           <el-radio-group v-model="form.resource">
-          <el-radio label="全部"></el-radio>
-          <el-radio label="草稿"></el-radio>
-          <el-radio label="待审核"></el-radio>
-          <el-radio label="审核通过"></el-radio>
-          <el-radio label="审核失败"></el-radio>
+          <el-radio
+            v-for="item in statTypes"
+            :key="item.type"
+            :label="item.label"></el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表">
           <el-select v-model="form.region" placeholder="请选择活动区域">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option
+            v-for="item in channels"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"></el-option>
+            <!-- :value是传给后端的数据 -->
           </el-select>
         </el-form-item>
         <el-form-item label="时间选择">
@@ -142,12 +145,14 @@ export default {
         desc: '',
         value1: ''
       },
+      channels: [], // 频道列表
       totalCount: 0,
       articleLoading: false
     }
   },
   created() {
-    this.loadArticles()
+    this.loadArticles() // 加载文章列表
+    this.loadChannels() // 加载频道列表
   },
   methods: {
     loadArticles(page = 1) { // 设置参数默认值为第一页
@@ -163,6 +168,16 @@ export default {
         this.articles = data.results // 列表数据
         this.totalCount = data.total_count // 总记录数
         this.articleLoading = false
+      })
+    },
+    loadChannels() {
+      this.$http({
+        method: 'GET',
+        url: '/channels'
+      }).then(data => {
+        // console.log(data)
+        // 渲染到页面上
+        this.channels = data.channels
       })
     },
     onSubmit() {
