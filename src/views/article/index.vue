@@ -56,6 +56,7 @@
           width="180">
           <!-- 表格列默认只能输出文本，如果需要自定义里面的内容，则需要用template -->
           <!-- slot-scope是插槽作用域 -->
+          <!-- scope.row是当前遍历对象 -->
           <template slot-scope="scope">
             <img width="50" :src="scope.row.cover.images[0]" alt="">
           </template>
@@ -72,6 +73,9 @@
         <el-table-column
           prop="status"
           label="状态">
+          <template slot-scope="scope">
+            <el-tag :type="statTypes[scope.row.status].type" >{{ statTypes[scope.row.status].label }}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
           label="操作">
@@ -104,7 +108,29 @@ export default {
   name: 'ArticleList',
   data() {
     return {
-      articles: [],
+      articles: [], // 文章列表
+      statTypes: [
+        {
+          type: 'info',
+          label: '草稿'
+        },
+        {
+          type: '',
+          label: '待审核'
+        },
+        {
+          type: 'success',
+          label: '审核通过'
+        },
+        {
+          type: 'warning',
+          label: '审核失败'
+        },
+        {
+          type: 'danger',
+          label: '已删除'
+        }
+      ],
       form: {
         name: '',
         region: '',
@@ -158,7 +184,7 @@ export default {
           method: 'DELETE',
           url: `/articles/${article.id}`
         }).then(data => {
-        // console.log(data)
+          console.log(data)
           this.$message({
             type: 'success',
             message: '删除成功!'
