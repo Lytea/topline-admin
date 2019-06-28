@@ -17,6 +17,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表">
+          <!--
           <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
           <el-option label="全部" value=""></el-option>
           <el-option
@@ -24,8 +25,9 @@
             :key="item.id"
             :label="item.name"
             :value="item.id"></el-option>
-            <!-- :value是传给后端的数据 -->
-          </el-select>
+             :value是传给后端的数据
+          </el-select>-->
+          <article-channel v-model="filterParams.channel_id"></article-channel>
         </el-form-item>
         <el-form-item label="时间选择">
           <el-col :span="11">
@@ -120,9 +122,13 @@
  </template>
 
 <script>
+import ArticleChannel from '@/components/article-channel'
 // const userInfo = JSON.parse(window.localStorage.getItem('user_info'))
 export default {
   name: 'ArticleList',
+  components: {
+    ArticleChannel
+  },
   data() {
     return {
       articles: [], // 文章列表
@@ -166,7 +172,7 @@ export default {
         end_pubdate: '' // 结束时间
       },
       begin_end_pubdate: [],
-      channels: [], // 频道列表
+      // channels: [], // 频道列表
       totalCount: 0,
       articleLoading: false,
       page: 1 // 当前页码
@@ -174,7 +180,7 @@ export default {
   },
   created() {
     this.loadArticles() // 加载文章列表
-    this.loadChannels() // 加载频道列表
+    // this.loadChannels() // 加载频道列表
   },
   methods: {
     loadArticles(page = 1) { // 设置参数默认值为第一页
@@ -201,16 +207,16 @@ export default {
       })
     },
     // 加载频道列表
-    loadChannels() {
-      this.$http({
-        method: 'GET',
-        url: '/channels'
-      }).then(data => {
-        // console.log(data)
-        // 渲染到页面上
-        this.channels = data.channels
-      })
-    },
+    // loadChannels() {
+    //   this.$http({
+    //     method: 'GET',
+    //     url: '/channels'
+    //   }).then(data => {
+    //     // console.log(data)
+    //     // 渲染到页面上
+    //     this.channels = data.channels
+    //   })
+    // },
     onSubmit() {
       // console.log('submit!')
       this.page = 1 // 让查询后的页码显示第一页高亮
