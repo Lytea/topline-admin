@@ -9,7 +9,7 @@
         <el-button type="primary" @click="handlePublish(true)">存入草稿</el-button>
       </div>
     </div>
-    <el-form>
+    <el-form v-loading="$route.name === 'publish-edit' && editLoading">
       <el-form-item>
         <el-input type="text" v-model="articleForm.title" placeholder="标题"></el-input>
       </el-form-item>
@@ -46,6 +46,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 import { quillEditor } from 'vue-quill-editor'
+
 export default {
   name: 'AppPublish',
   components: {
@@ -63,12 +64,32 @@ export default {
         },
         channel_id: 3 // 频道
       },
-      editorOption: {
-         // some quill options
-      }
+      editorOption: { // 富文本编辑器的内容
+        // some quill options
+      },
+      editLoading: false
+    }
+  },
+  created() {
+    if (this.$route.name === 'publish-edit') {
+      this.editArticles()
     }
   },
   methods: {
+    // 加载修改(编辑)文章
+    editArticles() {
+      this.editLoading = true
+      this.$http({
+        method: 'GET',
+        url: `/articles/${this.$route.params.id}`
+      }).then(data => {
+        // console.log(data)
+        this.articleForm = data
+        this.editLoading = false
+      }).catch(err => {
+        this.$message.error('加载文章详情失败')
+      })
+    },
     // 若不写draft=false会认为传入的是undefined，
     // 所以我让他默认为false表示不存为草稿
     handlePublish(draft = false) {

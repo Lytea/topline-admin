@@ -50,7 +50,6 @@
             type="primary"
             @click="onSubmit"
             :disabled="articleLoading"
-            :current-page="page"
           >查询</el-button>
         </el-form-item>
         </el-form>
@@ -97,7 +96,7 @@
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button type="success" plain>修改</el-button>
+            <el-button type="success" plain @click="$router.push({ name: 'publish-edit' ,params: {id: scope.row.id}})">修改</el-button>
             <el-button type="danger" plain @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -113,6 +112,7 @@
         layout="prev, pager, next"
         :total="totalCount"
         :disabled="articleLoading"
+        :current-page="page"
         @current-change="handleCurrentChange"
         >
       </el-pagination>
@@ -223,6 +223,7 @@ export default {
       this.loadArticles()
     },
     handleCurrentChange(page) {
+      this.page = page
       // 当页码发生改变的时候，显示页码对应的数据
       // console.log(page)
       this.loadArticles(page)
