@@ -5,8 +5,14 @@
       <div>
         <!-- @click="handlePublish(false)表示不存为草稿 -->
         <!-- @click="handlePublish(true)表示存为草稿 -->
-        <el-button type="success" @click="handlePublish(false)">{{ isEdit ? '更新' : '发布'}}</el-button>
-        <el-button type="primary" @click="handlePublish(true)">存入草稿</el-button>
+        <el-button
+          :loading="publishLoading"
+          type="success"
+          @click="handlePublish(false)">{{ isEdit ? '更新' : '发布'}}</el-button>
+        <el-button
+          :loading="publishLoading"
+          type="primary"
+          @click="handlePublish(true)">存入草稿</el-button>
       </div>
     </div>
     <el-form v-loading="isEdit && editLoading">
@@ -67,7 +73,8 @@ export default {
       editorOption: { // 富文本编辑器的内容
         // some quill options
       },
-      editLoading: false
+      editLoading: false,
+      publishLoading: false
     }
   },
   computed: {
@@ -107,17 +114,22 @@ export default {
     // 若不写draft=false会认为传入的是undefined，
     // 所以我让他默认为false表示不存为草稿
     handlePublish(draft = false) {
+      this.publishLoading = true
       if (this.isEdit) {
         // 执行编辑操作
-        this.SubmitEdit(draft)
+        this.SubmitEdit(draft).then(() => {
+          this.publishLoading = false
+        })
       } else {
         // 执行添加操作
-        this.SubmitAdd(draft)
+        this.SubmitAdd(draft).then(() => {
+          this.publishLoading = false
+        })
       }
     },
     // 提交编辑操作
     SubmitEdit(draft) {
-      this.$http({
+       return this.$http({
         method: 'PUT',
         url: `/articles/${this.articleId}`,
         data: this.articleForm,
@@ -136,7 +148,7 @@ export default {
     },
     // 提交添加操作
     SubmitAdd(draft) {
-      this.$http({
+      return this.$http({
         method: 'POST',
         url: '/articles',
         data: this.articleForm,
