@@ -74,7 +74,7 @@ export default {
         // some quill options
       },
       editLoading: false,
-      publishLoading: false
+      publishLoading: false // 禁用更新和存入草稿按钮状态
     }
   },
   computed: {
@@ -114,22 +114,22 @@ export default {
     // 若不写draft=false会认为传入的是undefined，
     // 所以我让他默认为false表示不存为草稿
     handlePublish(draft = false) {
-      this.publishLoading = true
+      this.publishLoading = true // 禁用按钮的点击状态
       if (this.isEdit) {
         // 执行编辑操作
         this.SubmitEdit(draft).then(() => {
-          this.publishLoading = false
+          this.publishLoading = false // 禁用按钮的点击状态
         })
       } else {
         // 执行添加操作
         this.SubmitAdd(draft).then(() => {
-          this.publishLoading = false
+          this.publishLoading = false // 禁用按钮的点击状态
         })
       }
     },
     // 提交编辑操作
     SubmitEdit(draft) {
-       return this.$http({
+      return this.$http({
         method: 'PUT',
         url: `/articles/${this.articleId}`,
         data: this.articleForm,
