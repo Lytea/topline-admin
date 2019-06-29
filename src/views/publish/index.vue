@@ -1,15 +1,15 @@
 <template>
   <el-card class="publish-card">
     <div slot="header" class="header">
-      <span>发表文章</span>
+      <span>{{ isEdit ? '编辑文章' : '发布文章'}}</span>
       <div>
         <!-- @click="handlePublish(false)表示不存为草稿 -->
         <!-- @click="handlePublish(true)表示存为草稿 -->
-        <el-button type="success" @click="handlePublish(false)">发布</el-button>
+        <el-button type="success" @click="handlePublish(false)">{{ isEdit ? '更新' : '发布'}}</el-button>
         <el-button type="primary" @click="handlePublish(true)">存入草稿</el-button>
       </div>
     </div>
-    <el-form v-loading="$route.name === 'publish-edit' && editLoading">
+    <el-form v-loading="isEdit && editLoading">
       <el-form-item>
         <el-input type="text" v-model="articleForm.title" placeholder="标题"></el-input>
       </el-form-item>
@@ -70,10 +70,20 @@ export default {
       editLoading: false
     }
   },
-  created() {
-    if (this.$route.name === 'publish-edit') {
-      this.editArticles()
+  computed: {
+    editor() {
+      return this.$refs.myQuillEditor.quill
+    },
+    isEdit() {
+      return this.$route.name === 'publish-edit'
     }
+  },
+  created() {
+    // if (this.isEdit) {
+    //   this.editArticles()
+    // }
+    // 可以简写为
+    this.isEdit && this.editArticles()
   },
   methods: {
     // 加载修改(编辑)文章
@@ -87,6 +97,7 @@ export default {
         this.articleForm = data
         this.editLoading = false
       }).catch(err => {
+        console.log(err)
         this.$message.error('加载文章详情失败')
       })
     },
@@ -109,12 +120,6 @@ export default {
         console.log(error)
         this.$message.error('发布失败')
       })
-    }
-
-  },
-  computed: {
-    editor() {
-      return this.$refs.myQuillEditor.quill
     }
   },
   mounted() {
