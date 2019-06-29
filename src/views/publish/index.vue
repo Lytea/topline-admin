@@ -76,6 +76,9 @@ export default {
     },
     isEdit() {
       return this.$route.name === 'publish-edit'
+    },
+    articleId() {
+      return this.$route.params.id
     }
   },
   created() {
@@ -91,7 +94,7 @@ export default {
       this.editLoading = true
       this.$http({
         method: 'GET',
-        url: `/articles/${this.$route.params.id}`
+        url: `/articles/${this.articleId}`
       }).then(data => {
         // console.log(data)
         this.articleForm = data
@@ -104,6 +107,35 @@ export default {
     // 若不写draft=false会认为传入的是undefined，
     // 所以我让他默认为false表示不存为草稿
     handlePublish(draft = false) {
+      if (this.isEdit) {
+        // 执行编辑操作
+        this.SubmitEdit(draft)
+      } else {
+        // 执行添加操作
+        this.SubmitAdd(draft)
+      }
+    },
+    // 提交编辑操作
+    SubmitEdit(draft) {
+      this.$http({
+        method: 'PUT',
+        url: `/articles/${this.articleId}`,
+        data: this.articleForm,
+        params: {
+          draft
+        }
+      }).then(data => {
+        this.$message({
+          type: 'success',
+          message: '编辑成功'
+        })
+      }).catch(error => {
+        console.log(error)
+        this.$message.error('编辑失败')
+      })
+    },
+    // 提交添加操作
+    SubmitAdd(draft) {
       this.$http({
         method: 'POST',
         url: '/articles',
