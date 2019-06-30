@@ -43,7 +43,7 @@ export default {
           response_type: 'comment'
         }
       }).then(data => {
-        //循环给每个数据都绑定一个changeLoading事件
+        // 循环给每个数据都绑定一个changeLoading事件
         data.results.forEach(item => {
           item.changeLoading = false // 一开始状态为启用状态
         })
