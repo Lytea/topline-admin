@@ -27,7 +27,23 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :span="4" :offset="2"></el-col>
+      <!-- 头像上传 -->
+      <el-col :span="4" :offset="2">
+        <!-- el-upload用于上传组件，它会有自动的将用户选择的图片去请求上传，我们需要做的就是配置一下 -->
+        <!-- action 请求地址 -->
+        <!-- http-request 覆盖默认的上传行为 -->
+        <!-- :src要绑定字段名为photo，调试工具可看到 -->
+        <el-upload
+          class="avatar-uploader"
+          action="http://ttapi.research.itcast.cn/mp/v1_0/user/photo"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+          :http-request="handleUpload">
+          <img v-if="userInfo.photo" :src="userInfo.photo" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+      </el-col>
     </el-row>
   </el-card>
 </template>
@@ -52,6 +68,7 @@ export default {
         this.userInfo = data
       })
     },
+    // 修改账户信息
     handleUpdate() {
       const { name, intro, email } = this.userInfo
       this.$http({
@@ -71,10 +88,62 @@ export default {
         console.log(err)
         this.$message.error('修改用户信息失败')
       })
+    },
+    // 头像上传
+    handleAvatarSuccess() {},
+    beforeAvatarUpload() {},
+    handleUpload(uploadConfig) {
+    //   console.log(uploadConfig)
+      // 上传文件
+      // 1.需要创建一个formData对象
+      // 2.将文件对象添加到FormData中
+      // 3.将FormData配置到请求体data选项中
+    //   photo是接口里要求data请求体必须传递的参数
+      const formData = new FormData()
+      formData.append('photo', uploadConfig.file)
+      console.log(formData)
+      this.$http({
+        method: 'PATCH',
+        url: '/user/photo',
+        data: formData
+      }).then(data => {
+        // console.log(data)
+        // 让上传的头像实时的显示出来
+        this.userInfo.photo = data.photo
+        this.$message({
+          type: 'success',
+          message: '头像上传成功'
+        })
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('上传头像失败')
+      })
     }
   }
 }
 </script>
 <style lang="less" scoped>
-
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
