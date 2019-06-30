@@ -17,7 +17,7 @@ const router = new Router({
     //   path: '/',
     //   component: () => import('@/views/home')
     // },
-    {
+    { // 登录
       name: 'login',
       path: '/login',
       component: () => import('@/views/login')
@@ -27,7 +27,7 @@ const router = new Router({
       path: '/',
       component: () => import('@/views/layout'),
       children: [
-        {
+        { // 首页
           name: 'home',
           path: '/',
           component: () => import('@/views/home')
@@ -37,20 +37,25 @@ const router = new Router({
           path: '/publish',
           component: () => import('@/views/publish')
         },
-        {
+        { // 编辑文章
           name: 'publish-edit',
           path: '/publish/:id',
           component: () => import('@/views/publish')
         },
-        {
+        { // 文章列表
           name: 'article-list',
           path: '/articles',
           component: () => import('@/views/article')
         },
-        {
+        { // 评论列表
           name: 'article-comment',
           path: '/comment',
           component: () => import('@/views/comment')
+        },
+        { // 账户设置
+          name: 'account-setting',
+          path: '/account',
+          component: () => import('@/views/account')
         }
       ]
     }
