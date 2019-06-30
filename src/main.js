@@ -8,6 +8,8 @@ import 'nprogress/nprogress.css'
 import axios from 'axios'
 // 引入第三方处理大数字的包
 import JSONbig from 'json-bigint'
+// 引入store
+import store from './store'
 
 // 配置axios的基础路由
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
@@ -81,5 +83,6 @@ axios.interceptors.response.use(response => {
 })
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')

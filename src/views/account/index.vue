@@ -49,9 +49,11 @@
 </template>
 <script>
 export default {
+  name: 'AccountSetting',
   data() {
     return {
-      userInfo: {}
+      userInfo: {},
+      token: `Bearer ${JSON.parse(window.localStorage.getItem('user_info')).token}`
     }
   },
   created() {
@@ -79,7 +81,9 @@ export default {
           intro,
           email
         }
-      }).then(() => {
+      }).then(data => {
+        // 提交修改的用户信息
+        this.$store.commit('changeUser', data)
         this.$message({
           type: 'success',
           message: '修改用户信息成功'
@@ -101,7 +105,7 @@ export default {
     //   photo是接口里要求data请求体必须传递的参数
       const formData = new FormData()
       formData.append('photo', uploadConfig.file)
-      console.log(formData)
+      // console.log(formData)
       this.$http({
         method: 'PATCH',
         url: '/user/photo',
@@ -110,6 +114,8 @@ export default {
         // console.log(data)
         // 让上传的头像实时的显示出来
         this.userInfo.photo = data.photo
+        // 把修改后的照片信息实时的传给header中的信息
+        this.$store.commit('changeUser', this.userInfo)
         this.$message({
           type: 'success',
           message: '头像上传成功'
