@@ -5,10 +5,23 @@
     </div>
     <div class="action">
       <el-radio-group v-model="action" size="small">
-        <el-radio-button label="全部"></el-radio-button>
-        <el-radio-button label="收藏"></el-radio-button>
+        <el-radio-button label="全部" @click.native="loadImages()"></el-radio-button>
+        <el-radio-button label="收藏" @click.native="loadImages(true)"></el-radio-button>
       </el-radio-group>
-      <el-button type="primary">上传图片</el-button>
+      <!-- show-file-list是否显示已上传文件列表 -->
+      <!-- action表示请求地址 -->
+      <!-- name 上传的文件字段名 -->
+      <!-- on-success 文件上传成功时的钩子 -->
+      <!-- on-success是一个props参数 props绑定的是一个表达式，它会将表达式的计算结果绑定到这里 -->
+      <el-upload
+        action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+        :headers="{ Authorization: `Bearer ${$store.state.user.token}` }"
+        :show-file-list="false"
+        name="image"
+        :on-success="handleUploadImages"
+      >
+        <el-button size="small" type="primary">点击上传</el-button>
+      </el-upload>
     </div>
     <el-row :gutter="20">
       <el-col :span="4" v-for="item in images" :key="item.id">
@@ -48,10 +61,13 @@ export default {
   },
   methods: {
     // 加载图片
-    loadImages() {
+    loadImages(collect = false) {
       this.$http({
         method: 'GET',
-        url: '/user/images'
+        url: '/user/images',
+        params: {
+          collect
+        }
       }).then(data => {
         // console.log(data)
         this.images = data.results
@@ -79,7 +95,7 @@ export default {
           this.$message.error(`${collect ? '' : '取消'}收藏失败`)
         })
     },
-    //删除图片
+    // 删除图片
     handleDelete(bb) {
       this.$http({
         method: 'DELETE',
@@ -89,12 +105,16 @@ export default {
           type: 'success',
           message: '删除成功'
         })
-        //刷新数据列表
+        // 刷新数据列表
         this.loadImages()
       }).catch(err => {
         console.log(err)
         this.$message.error('删除成功')
       })
+    },
+    // 上传图片文件成功是会调用
+    handleUploadImages() {
+      this.loadImages()
     }
   }
 }
