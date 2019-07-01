@@ -10,7 +10,7 @@
             <el-input v-model="userInfo.name"></el-input>
           </el-form-item>
           <el-form-item label="媒体简介">
-            <el-input v-model="userInfo.intor"></el-input>
+            <el-input v-model="userInfo.intro"></el-input>
           </el-form-item>
           <!-- :value用于单向绑定，希望数据改变视图，视图不能改变数据 -->
           <el-form-item label="头条号ID">

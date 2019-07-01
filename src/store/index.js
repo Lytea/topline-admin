@@ -5,8 +5,8 @@ Vuex容器：集中式状态管理
        state中的数据也是响应式的，数据改变驱动视图更新
   修改：不要直接在组件中使用this.$store.state.xxx=xxx修改容器数据
       正确修改方式：
-      1.在容器中定义motations函数
-      2.在组件中提交motation完成对状态的修改
+      1.在容器中定义mutations函数
+      2.在组件中提交mutation完成对状态的修改
 */
 // 1.安装vuex
 // 2.配置
@@ -25,7 +25,7 @@ const store = new Vuex.Store({
     changeUser(state, data) {
       // 修改容器中的用户信息
       // console.log('changeuser', data)
-      // 把data中的数据成员拷贝到state.user中
+      // 对象拷贝  把data中的数据成员拷贝到state.user中
       Object.assign(state.user, data)
       // 把修改后的用户信息保存到本地存储
       window.localStorage.setItem('user_info', JSON.stringify(state.user))

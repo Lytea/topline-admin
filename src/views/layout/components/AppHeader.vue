@@ -3,6 +3,10 @@
     <el-col :span="14">江苏传智播客教育科技股份有限公司</el-col>
     <el-col :span="4" :offset="6">
       <el-dropdown>
+        <!-- 读取在Vuex组件中新上传的头像和名称，并实时的更新到这里 -->
+        <!-- 注意：这里只是在Vuex容器中修改 -->
+        <!-- 但是我们想要的并不是在容器中修改数据，我们需要在更新用户信息成功后(改变视图数据)这里实时的更新
+        所以，我们要在mutitation函数中定义，通过修改mutitation函数中的数据，我们这里提交函数来修改数据 -->
         <span><img width="30" :src="$store.state.user.photo"></span>
         <span class="el-dropdown-link">
           {{$store.state.user.name}}<i class="el-icon-arrow-down el-icon--right"></i>
