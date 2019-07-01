@@ -13,9 +13,15 @@
     <el-row :gutter="20">
       <el-col :span="4" v-for="item in images" :key="item.id">
         <el-card :body-style="{ padding: '0px' }">
-          <img :src="item.url" style="width: 200px; height: 200px; text-align:center" alt="">
+          <img :src="item.url" style="width: 200px; height: 200px; text-align:center" alt>
           <div style="padding:10px;display:flex;justify-content:center">
-            <el-button type="primary" :icon="item.is_collected ? 'el-icon-star-on' : 'el-icon-star-off'" circle plain></el-button>
+            <el-button
+              type="primary"
+              :icon="item.is_collected ? 'el-icon-star-on' : 'el-icon-star-off'"
+              circle
+              plain
+              @click="handleCollect(item)"
+            ></el-button>
             <el-button type="primary" icon="el-icon-delete-solid" circle plain></el-button>
           </div>
         </el-card>
@@ -32,9 +38,11 @@ export default {
     }
   },
   created() {
+    // 加载图片列表
     this.loadImages()
   },
   methods: {
+    // 加载图片
     loadImages() {
       this.$http({
         method: 'GET',
@@ -43,6 +51,28 @@ export default {
         // console.log(data)
         this.images = data.results
       })
+    },
+    // 收藏功能
+    handleCollect(aa) {
+      const collect = !aa.is_collected
+      this.$http({
+        method: 'PUT',
+        url: `/user/images/${aa.id}`,
+        data: {
+          collect: !aa.is_collected
+        }
+      })
+        .then(data => {
+          aa.is_collected = collect
+          this.$message({
+            type: 'success',
+            message: `${collect ? '' : '取消'}收藏成功`
+          })
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error(`${collect ? '' : '取消'}收藏失败`)
+        })
     }
   }
 }
