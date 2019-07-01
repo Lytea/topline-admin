@@ -53,6 +53,12 @@ import 'quill/dist/quill.bubble.css'
 
 import { quillEditor } from 'vue-quill-editor'
 
+/*
+如果是更新，则在第一次更新数据之后监视
+如果是发布，一上来就监视
+如果是从更新页面导航到发布页面，则清空发布页面的数据
+如果是发布页面导航到更新页面，则重新加载页面的数据
+*/
 export default {
   name: 'AppPublish',
   components: {
@@ -74,9 +80,37 @@ export default {
         // some quill options
       },
       editLoading: false,
-      publishLoading: false // 禁用更新和存入草稿按钮状态
+      publishLoading: false, // 禁用更新和存入草稿按钮状态
+      formDirty: false
     }
   },
+  watch: {
+    $route(to, from) {
+      // console.log(to,from)
+      if (from.name === 'publish-edit') {
+        this.articleForm = {
+          articleForm: {
+            title: '', // 标题
+            content: '', // 内容
+            cover: { // 封面
+              type: 0,
+              images: []
+            },
+            channel_id: 3 // 频道
+          }
+        }
+      }
+    }
+  },
+  // watch: {
+  //   articleForm: {
+  //     handler() { // 当被监视数据发生改变的时候会被调用
+  //       // console.log(123)
+  //       this.formDirty = true
+  //     },
+  //     deep: true // 对象、数组类型需要配置深度监视
+  //   }
+  // },
   computed: {
     editor() {
       return this.$refs.myQuillEditor.quill
@@ -94,6 +128,10 @@ export default {
     // }
     // 可以简写为
     this.isEdit && this.editArticles()
+    // 如果是发布页面，直接监视
+    if (this.$route.name === 'publish') {
+      this.watchForm()
+    }
   },
   methods: {
     // 加载修改(编辑)文章
@@ -106,6 +144,10 @@ export default {
         // console.log(data)
         this.articleForm = data
         this.editLoading = false
+        // 更新数据加载好以后，去开启监视
+        this.$nextTick(() => {
+          this.watchForm()
+        })
       }).catch(err => {
         console.log(err)
         this.$message.error('加载文章详情失败')
@@ -164,10 +206,36 @@ export default {
         console.log(error)
         this.$message.error('发布失败')
       })
+    },
+    // 监视表单
+    watchForm() {
+      const unWatch = this.$watch('articleForm', function() {
+        // console.log('watchForm')
+        this.formDirty = true
+        // 关闭监视器
+        unWatch()
+      }, {
+        deep: true
+      })
     }
   },
   mounted() {
     console.log('this is current quill instance object', this.editor)
+  },
+  beforeRouteLeave(to, from, next) {
+    // 如果数据没有修改，就允许通过
+    if (!this.formDirty) {
+      return next()
+    }
+    // 如果数据修改了，就提示用户
+    const answer = window.confirm('当前有未保存的数据，确认要离开吗？')
+    if (answer) {
+      // 正常往后执行导航
+      next()
+    } else {
+      // 取消当前导航
+      next(false)
+    }
   }
 }
 </script>
