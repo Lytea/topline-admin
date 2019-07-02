@@ -26,6 +26,15 @@
         </quill-editor>
       </el-form-item>
       <el-form-item label="封面">
+         <el-radio-group v-model="articleForm.cover.type">
+           <el-radio :label="1">单图</el-radio>
+           <el-radio :label="3">三图</el-radio>
+           <el-radio :label="0">无图</el-radio>
+           <el-radio :label="-1">自动</el-radio>
+         </el-radio-group>
+         <template v-if="articleForm.cover.type > 0">
+           <UploadImage v-for="item in articleForm.cover.type" :key="item"></UploadImage>
+         </template>
       </el-form-item>
       <el-form-item label="频道">
         <!-- $event就是事件参数，事件参数就是在handleChange函数中传入的val的值，就是4或8 -->
@@ -45,6 +54,7 @@
   </el-card>
 </template>
 <script>
+import UploadImage from './components/uploadImage.vue'
 import ArticleChannel from '@/components/article-channel'
 // require styles
 import 'quill/dist/quill.core.css'
@@ -63,7 +73,8 @@ export default {
   name: 'AppPublish',
   components: {
     ArticleChannel,
-    quillEditor
+    quillEditor,
+    UploadImage
   },
   data() {
     return {
@@ -71,7 +82,7 @@ export default {
         title: '', // 标题
         content: '', // 内容
         cover: { // 封面
-          type: 0,
+          type: 0, // 封面类型 -1自动 0无图 1 一张图 3 三张图
           images: []
         },
         channel_id: 3 // 频道
