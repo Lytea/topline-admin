@@ -36,7 +36,7 @@
            <el-row>
              <!-- :span可以让三个图片水平放置 -->
              <el-col :span="6" v-for="item in articleForm.cover.type" :key="item">
-               <UploadImage></UploadImage>
+               <UploadImage v-model="articleForm.cover.images[item - 1]"></UploadImage>
              </el-col>
            </el-row>
          </template>
@@ -88,7 +88,7 @@ export default {
         content: '', // 内容
         cover: { // 封面
           type: 1, // 封面类型 -1自动 0无图 1 一张图 3 三张图
-          images: []
+          images: [] // 图片链接，这里是真正存储图片的数组，图片链接
         },
         channel_id: 3 // 频道
       },
