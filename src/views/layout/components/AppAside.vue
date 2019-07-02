@@ -33,28 +33,10 @@
         <span slot="title">素材管理</span>
       </el-menu-item>
     </el-submenu>
-    <el-submenu index="/fans">
-      <template slot="title">
-        <i class="iconfont iconfensi"></i>
-        <span>粉丝管理</span>
-      </template>
-      <el-menu-item index="3-1">
-        <i class="iconfont iconiconfontpaixingbang"></i>
-        <span slot="title">图文数据</span>
-      </el-menu-item>
-      <el-menu-item index="3-2">
-        <i class="iconfont iconpersonalinfo"></i>
-        <span slot="title">粉丝概况</span>
-      </el-menu-item>
-      <el-menu-item index="3-3">
-        <i class="iconfont iconfensihuaxiang"></i>
-        <span slot="title">粉丝画像</span>
-      </el-menu-item>
-      <el-menu-item index="3-4">
-        <i class="iconfont iconfensiliebiao"></i>
-        <span slot="title">粉丝列表</span>
-      </el-menu-item>
-    </el-submenu>
+    <el-menu-item index="/fans/overview">
+      <i class="iconfont iconfensi"></i>
+      <span slot="title">粉丝</span>
+    </el-menu-item>
     <el-menu-item index="/account">
       <i class="el-icon-setting"></i>
       <span slot="title">账户设置</span>

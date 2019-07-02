@@ -36,6 +36,7 @@
         <el-upload
           class="avatar-uploader"
           action="http://ttapi.research.itcast.cn/mp/v1_0/user/photo"
+          :headers="{ Authorization: `Bearer ${$store.state.user.token}` }"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"

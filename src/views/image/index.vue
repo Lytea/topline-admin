@@ -49,6 +49,7 @@
 </template>
 <script>
 export default {
+  name: 'imageList',
   data() {
     return {
       action: {},
