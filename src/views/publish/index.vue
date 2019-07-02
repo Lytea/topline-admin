@@ -33,7 +33,12 @@
            <el-radio :label="-1">自动</el-radio>
          </el-radio-group>
          <template v-if="articleForm.cover.type > 0">
-           <UploadImage v-for="item in articleForm.cover.type" :key="item"></UploadImage>
+           <el-row>
+             <!-- :span可以让三个图片水平放置 -->
+             <el-col :span="6" v-for="item in articleForm.cover.type" :key="item">
+               <UploadImage></UploadImage>
+             </el-col>
+           </el-row>
          </template>
       </el-form-item>
       <el-form-item label="频道">
@@ -82,7 +87,7 @@ export default {
         title: '', // 标题
         content: '', // 内容
         cover: { // 封面
-          type: 0, // 封面类型 -1自动 0无图 1 一张图 3 三张图
+          type: 1, // 封面类型 -1自动 0无图 1 一张图 3 三张图
           images: []
         },
         channel_id: 3 // 频道
